@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+'use strict';
+const meow = require('meow');
+const getStdin = require('get-stdin');
+const fs = require('fs');
+const parser = require('xmls2json');
+
+const cli = meow(`
+Usage
+  $ xges foo.gxes
+  or
+  $ cat foo.gxes | xges
+ `);
+
+
+ const arg = cli.input[0];
+
+if(typeof arg == 'undefined'){
+  getStdin().then(str => {
+      if(str !== '') process.stdout.write(parser.toJson(str)))
+      else cli.showHelp();
+  });
+}else if(arg.indexOf('.xges') !== -1){
+   process.stdout.write(parser.toJson(fs.readFileSync(`${process.cwd()}/${arg}`,'utf8')))
+}else{
+  cli.showHelp();
+}
